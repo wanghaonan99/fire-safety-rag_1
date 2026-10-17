@@ -28,4 +28,6 @@ services:
       - key: REDIS_URL
         sync: false
       - key: CORS_ORIGINS
-        value: https://your-app.vercel.app
+        # 前端已部署在 Vercel：https://fire-safety-rag-1.vercel.app
+        # 绑自定义域名后，把新域名也加进来（逗号分隔，结尾不要斜杠）
+        value: https://fire-safety-rag-1.vercel.app
