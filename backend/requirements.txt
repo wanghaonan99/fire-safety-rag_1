@@ -1,0 +1,74 @@
+# ============================================================
+# fire-safety-rag / backend 依赖清单
+# Python 3.11+ （建议 3.11 或 3.12；PaddleOCR 对 3.13 支持尚不完整）
+#
+# 安装（CPU 版 torch，体积小、部署便宜，Render 免费套餐够用）：
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements.txt
+# ============================================================
+
+# ---------- Web / API ----------
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-multipart>=0.0.12          # 文件上传（UploadFile）必需，FastAPI 不内置
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+python-dotenv>=1.0.1
+httpx>=0.27.2                     # DeepSeek / SiliconFlow 直连调用、健康检查
+
+# ---------- RAG 框架（LlamaIndex 数据层 + 检索层） ----------
+llama-index>=0.12.0
+llama-index-vector-stores-postgres>=0.3.0
+llama-index-embeddings-huggingface>=0.4.0
+llama-index-retrievers-bm25>=0.4.0
+llama-index-postprocessor-flag-embedding-reranker>=0.3.0
+llama-index-llms-openai-like>=0.3.0
+llama-index-embeddings-openai-like>=0.3.0   # 走 SiliconFlow 时的 OpenAI 兼容 embedding
+
+# ---------- 数据库 / ORM ----------
+psycopg2-binary>=2.9.10           # Neon pooler 连接（LlamaIndex PGVectorStore 亦可用）
+pgvector>=0.3.5                   # Python 侧向量类型注册（SQLAlchemy 建表用）
+sqlalchemy>=2.0.36
+alembic>=1.13.3
+greenlet>=3.1.0                   # SQLAlchemy 异步/依赖链需要
+
+# ---------- 文档解析 ----------
+pymupdf>=1.24.0                   # OCR 降级时把 PDF 渲染成图片；且对国标 PDF 的
+                                  # CID 字体（无 ToUnicode）抽取效果优于 pdfminer
+pdfplumber>=0.11.4
+python-docx>=1.1.2
+beautifulsoup4>=4.12.3
+lxml>=5.3.0
+paddleocr>=2.8.1                  # 第二批：扫描件 PDF / 图片降级 OCR
+paddlepaddle>=2.6.1               # PaddleOCR 运行后端（CPU）
+
+# ---------- 模型 / 向量 ----------
+sentence-transformers>=3.2.1
+transformers>=4.46.0
+torch>=2.4.0
+FlagEmbedding>=1.3.0              # BAAI/bge-reranker-v2-m3 本地加载
+numpy>=1.26.0
+datasets>=3.1.0
+
+# ---------- 评估 / 可观测 ----------
+ragas>=0.2.6
+langfuse>=2.53.0
+
+# ---------- 缓存 / 会话 ----------
+redis>=5.2.0
+
+# ---------- 开发与测试 ----------
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
+
+# ============================================================
+# 可选：复杂 PDF（扫描件 / 方正书版乱码 / 表格多的国标）解析
+# ============================================================
+# 不装进本项目 venv，用独立环境，避免与 llama-index / paddleocr 依赖打架：
+#     pip install uv
+#     uv venv .mineru --python 3.12
+#     uv pip install --python .mineru "mineru>=4.0,<5"
+# 然后用 scripts/mineru_convert.py 把 PDF 转成 Markdown 再入库。
+# 模型占用：basic 档约 0.8GB（最低 2GB 内存）；standard 档约 2GB（最低 8GB 内存）。
+# 详见 README「复杂 PDF 怎么办」。
+

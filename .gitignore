@@ -1,0 +1,47 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- 环境变量（绝不要提交）----
+.env
+.env.*
+!.env.example
+# 部署模板要入库（否则别人拉下来没有可复制的模板）
+!deploy/.env.prod.example
+# 证书私钥绝不要提交
+deploy/certs/
+
+# ---- 数据 / 索引 ----
+backend/data/uploads/*
+backend/data/indexes/*
+!backend/data/uploads/.gitkeep
+!backend/data/indexes/.gitkeep
+*.sqlite3
+
+# ---- 大文件：模型缓存 / 独立工具环境（绝不要提交，动辄数 GB）----
+.home/
+.mineru/
+.uvcache/
+backend/data/md/
+backend/data/*.log
+hf_cache/
+
+# ---- 前端 ----
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+.vercel/
+
+# ---- 其他 ----
+.DS_Store
+Thumbs.db
+*.log
+.piptmp/
+pytest-cache-files-*/
+.pytest_work/

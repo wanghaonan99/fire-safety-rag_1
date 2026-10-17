@@ -1,0 +1,31 @@
+# Render Blueprint：一键部署后端（免费套餐）
+# 用法：Render Dashboard -> New -> Blueprint -> 选择本仓库
+services:
+  - type: web
+    name: fire-safety-rag-api
+    runtime: docker
+    plan: free
+    region: singapore          # 尽量与 Neon / DeepSeek 延迟较低的区域一致
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: prod
+      - key: DEBUG
+        value: "false"
+      - key: DEEPSEEK_API_KEY
+        sync: false            # 在 Render 面板里手填，不入库
+      - key: DATABASE_URL
+        sync: false            # Neon 的 -pooler 连接串
+      - key: EMBEDDING_PROVIDER
+        value: siliconflow     # 免费套餐内存有限，建议走 API 而非本地加载 bge-m3
+      - key: SILICONFLOW_API_KEY
+        sync: false
+      - key: RERANK_PROVIDER
+        value: none            # 免费套餐跑不动 reranker，需要时改成 local 并升级套餐
+      - key: REDIS_URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://your-app.vercel.app

@@ -1,0 +1,84 @@
+# ============================================================================
+# 生产部署：后端 + PostgreSQL(pgvector) + Nginx
+#
+# 用法：
+#   1. cp deploy/.env.prod.example .env.prod   # 然后填必填项
+#   2. 准备模型缓存（见 docs/部署指南.md「模型怎么上服务器」）
+#   3. docker compose up -d --build
+#   4. docker compose logs -f api
+#
+# 说明：
+#   · db 只在内网暴露，不映射到宿主机 5432（避免公网裸奔）
+#   · api 也不直接对外，由 nginx 反代（这样能统一处理 50MB 上传、超时、gzip）
+#   · 单进程 uvicorn：模型常驻内存，多 worker 会按倍数吃内存，不建议
+# ============================================================================
+name: fire-safety-rag
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fsrag
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在 .env.prod 里设置强密码}
+      POSTGRES_DB: fsrag
+      # 中文排序/比较（可选，稳妥起见用 C 避免 locale 差异）
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fsrag -d fsrag"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    expose:
+      - "5432"
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      # 容器内连本机 pg（覆盖 .env.prod 里的 DATABASE_URL，避免连外网库）
+      DATABASE_URL: postgresql://fsrag:${POSTGRES_PASSWORD}@db:5432/fsrag
+      # 容器内路径（宿主机路径在 volumes 里映射）
+      MODEL_CACHE_DIR: /app/data/indexes/hf_cache
+      UPLOAD_DIR: /app/data/uploads
+    volumes:
+      # 模型缓存：把开发机上的 backend/data/indexes/hf_cache 传上来即可
+      # 若用 API 嵌入（EMBEDDING_PROVIDER=siliconflow）可以不挂这行
+      - ./backend/data/indexes/hf_cache:/app/data/indexes/hf_cache
+      - uploads:/app/data/uploads
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8000/health || exit 1"]
+      interval: 20s
+      timeout: 5s
+      start_period: 120s   # 首次加载模型需要时间
+      retries: 10
+
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/certs:/etc/nginx/certs:ro
+      - certbot-www:/var/www/certbot:ro
+    depends_on:
+      api:
+        condition: service_started
+
+volumes:
+  dbdata:
+  uploads:
+  certbot-www:

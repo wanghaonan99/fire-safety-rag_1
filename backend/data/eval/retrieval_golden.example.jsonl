@@ -1,0 +1,3 @@
+{"question": "甲类厂房与员工宿舍之间的防火间距不应小于多少米？", "ground_truth": "甲类厂房与重要公共建筑、员工宿舍等人员密集场所的防火间距应符合《建筑设计防火规范》GB 50016 的相关规定。", "ground_truth_ids": ["替换为真实chunk_id"]}
+{"question": "一个计算单元内配置的灭火器数量不得少于几具？", "ground_truth": "一个计算单元内配置的灭火器数量不得少于 2 具，每个设置点的灭火器数量不宜多于 5 具。", "ground_truth_ids": ["替换为真实chunk_id"]}
+{"question": "消防车道的净宽度和净空高度要求是多少？", "ground_truth": "消防车道的净宽度和净空高度均不应小于 4.0m。", "ground_truth_ids": ["替换为真实chunk_id"]}

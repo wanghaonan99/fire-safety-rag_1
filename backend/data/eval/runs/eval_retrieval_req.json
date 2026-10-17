@@ -1,0 +1,6 @@
+{
+  "dataset_path": "./data/eval/retrieval_golden.jsonl",
+  "top_k": 10,
+  "run_name": "baseline-v1",
+  "use_rerank": true
+}

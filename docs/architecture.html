@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工厂消防知识问答助手 · 实现链路图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020617;
+    --panel: #0b1220;
+    --border: #1e293b;
+    --ink: #e2e8f0;
+    --ink-dim: #94a3b8;
+    --ink-faint: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px 24px 34px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', 'Cascadia Mono', 'Noto Sans SC', 'Microsoft YaHei', ui-monospace, monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1480px; margin: 0 auto; }
+  header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .pulse {
+    width: 9px; height: 9px; border-radius: 50%; background: #34d399; flex: none;
+    box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: pulse 2.4s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.55); }
+    70%  { box-shadow: 0 0 0 10px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
+  h1 { font-size: 19px; font-weight: 700; margin: 0; letter-spacing: .2px; }
+  .tagline { font-size: 11.5px; color: var(--ink-faint); margin-top: 4px; }
+  .diagram {
+    border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    background: var(--bg); line-height: 0;
+  }
+  .diagram svg { display: block; }
+  .n-title { fill: #e2e8f0; font-size: 12.5px; font-weight: 600; }
+  .n-sub   { fill: #94a3b8; font-size: 9.5px; }
+  .col-title { fill: #f1f5f9; font-size: 14px; font-weight: 700; }
+  .col-sub   { fill: #64748b; font-size: 9.5px; }
+  .panel-title { fill: #fbbf24; font-size: 12.5px; font-weight: 600; }
+  .kw { fill: #c4b5fd; font-size: 9.5px; }
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 14px; margin-top: 18px;
+  }
+  .card {
+    border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px;
+    background: var(--panel);
+  }
+  .card-header { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+  .card-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .card h3 { font-size: 12.5px; font-weight: 600; margin: 0; color: var(--ink); }
+  .card ul { margin: 0; padding: 0; list-style: none; }
+  .card li {
+    font-size: 11px; line-height: 1.72; color: var(--ink-dim);
+    padding-left: 13px; position: relative;
+  }
+  .card li::before {
+    content: '·'; position: absolute; left: 3px; color: var(--ink-faint);
+  }
+  footer {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--ink-faint); line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="pulse"></div>
+    <div>
+      <h1>工厂消防知识问答助手 · 实现链路</h1>
+      <div class="tagline">
+        backend/app 4533 行 · FastAPI + LlamaIndex + pgvector(Neon) + DeepSeek ·
+        三条链路：离线建库 / 在线问答 / 评估
+      </div>
+    </div>
+  </header>
+
+  <div class="diagram">
+        <svg viewBox="0 0 1440 1460" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+  </pattern>
+  <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+          orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+  </marker>
+</defs>
+    <rect width="1440" height="1460" fill="#020617"/>
+    <rect width="1440" height="1460" fill="url(#grid)"/>
+    <rect x="44" y="130" width="432" height="942" rx="12" fill="rgba(15,23,42,0.35)" stroke="#1e293b" stroke-width="1" stroke-dasharray="8,4"/>
+    <text x="64" y="164" class="col-title">① 离线导入链路</text>
+    <text x="64" y="182" class="col-sub">ingestion · 建库一次，之后只读</text>
+    <rect x="504" y="130" width="432" height="1224" rx="12" fill="rgba(15,23,42,0.35)" stroke="#1e293b" stroke-width="1" stroke-dasharray="8,4"/>
+    <text x="524" y="164" class="col-title">② 在线问答链路</text>
+    <text x="524" y="182" class="col-sub">query · 每次提问走一遍</text>
+    <rect x="964" y="130" width="432" height="840" rx="12" fill="rgba(15,23,42,0.35)" stroke="#1e293b" stroke-width="1" stroke-dasharray="8,4"/>
+    <text x="984" y="164" class="col-title">③ 评估链路</text>
+    <text x="984" y="182" class="col-sub">evaluation · 调优与回归时</text>
+    <rect x="60" y="200" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="200" width="400" height="62" rx="6" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="76" y="225" class="n-title">POST /api/ingest/{upload,url,text}</text>
+    <text x="76" y="244" class="n-sub">routes_ingest.py · 后缀白名单 · 50MB 上限</text>
+    <line x1="260" y1="262" x2="260" y2="287" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="294" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="294" width="400" height="62" rx="6" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="76" y="319" class="n-title">_save_upload() → data/uploads/</text>
+    <text x="76" y="338" class="n-sub">流式落盘；超限即时删除并返回 413</text>
+    <line x1="260" y1="356" x2="260" y2="381" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="388" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="388" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="76" y="413" class="n-title">index_file() · SHA-256 幂等</text>
+    <text x="76" y="432" class="n-sub">已索引→跳过；force=True→先清旧向量再重建</text>
+    <line x1="260" y1="450" x2="260" y2="475" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="482" width="400" height="80" rx="6" fill="#0f172a"/>
+    <rect x="60" y="482" width="400" height="80" rx="6" fill="rgba(120,53,15,0.45)" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="76" y="507" class="n-title">load_file() · 解析三级阶梯</text>
+    <text x="76" y="526" class="n-sub">① pdfplumber → ② quality&lt;0.15 换 PyMuPDF →</text>
+    <text x="76" y="541" class="n-sub">③ 仍不合格或页均&lt;50字 → PaddleOCR 逐页（带缓存）</text>
+    <line x1="260" y1="562" x2="260" y2="587" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="594" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="594" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="76" y="619" class="n-title">chunk_document() 切块</text>
+    <text x="76" y="638" class="n-sub">标题链拼进正文 + SemanticSplitter（可降级）</text>
+    <line x1="260" y1="656" x2="260" y2="681" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="688" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="688" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="76" y="713" class="n-title">attach_hype() 假想问题 ×3</text>
+    <text x="76" y="732" class="n-sub">DeepSeek 出题 → 写进 metadata 一起被索引</text>
+    <line x1="260" y1="750" x2="260" y2="775" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="782" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="782" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="76" y="807" class="n-title">_build_nodes() → TextNode</text>
+    <text x="76" y="826" class="n-sub">id_=chunk.id · NodeRelationship.SOURCE</text>
+    <line x1="260" y1="844" x2="260" y2="869" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="876" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="876" width="400" height="62" rx="6" fill="rgba(76,29,149,0.50)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="76" y="901" class="n-title">PGVectorStore 写入</text>
+    <text x="76" y="920" class="n-sub">data_fire_chunks（Neon pgvector · HNSW）</text>
+    <line x1="260" y1="938" x2="260" y2="963" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="60" y="970" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="60" y="970" width="400" height="62" rx="6" fill="rgba(76,29,149,0.50)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="76" y="995" class="n-title">收尾 · status=indexed</text>
+    <text x="76" y="1014" class="n-sub">三层缓存全失效：index / retriever / semantic</text>
+    <rect x="520" y="200" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="200" width="400" height="62" rx="6" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="536" y="225" class="n-title">POST /api/query</text>
+    <text x="536" y="244" class="n-sub">routes_query.py · 同步 def 走线程池（async 必崩）</text>
+    <line x1="720" y1="262" x2="720" y2="287" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="294" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="294" width="400" height="62" rx="6" fill="rgba(76,29,149,0.50)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="536" y="319" class="n-title">SessionStore.get_or_create()</text>
+    <text x="536" y="338" class="n-sub">chat_sessions · 首轮问题作为会话标题</text>
+    <line x1="720" y1="356" x2="720" y2="381" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="388" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="388" width="400" height="62" rx="6" fill="rgba(120,53,15,0.45)" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="536" y="413" class="n-title">get_cached() 语义缓存</text>
+    <text x="536" y="432" class="n-sub">Redis → 内存 LRU 降级；cosine ≥ 0.95 直接返回</text>
+    <line x1="720" y1="450" x2="720" y2="475" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="482" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="482" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="536" y="507" class="n-title">_condense_question() 指代消解</text>
+    <text x="536" y="526" class="n-sub">多轮把「它需要几个」补全为独立问题</text>
+    <line x1="720" y1="544" x2="720" y2="569" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="576" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="576" width="400" height="62" rx="6" fill="rgba(120,53,15,0.45)" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="536" y="601" class="n-title">rewrite_queries() 查询改写</text>
+    <text x="536" y="620" class="n-sub">Step-back / HyDE —— 默认关闭（省 1 次 LLM+检索）</text>
+    <line x1="720" y1="638" x2="720" y2="663" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="670" width="400" height="80" rx="6" fill="#0f172a"/>
+    <rect x="520" y="670" width="400" height="80" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="536" y="695" class="n-title">get_hybrid_retriever()（带缓存）</text>
+    <text x="536" y="714" class="n-sub">两路并联：向量 top10 ← pgvector</text>
+    <text x="536" y="729" class="n-sub">BM25 top10 ← data_fire_chunks（中文 2-gram）</text>
+    <line x1="720" y1="750" x2="720" y2="775" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="782" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="782" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="536" y="807" class="n-title">QueryFusionRetriever · RRF 融合</text>
+    <text x="536" y="826" class="n-sub">num_queries=1 · use_async=False</text>
+    <line x1="720" y1="844" x2="720" y2="869" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="876" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="876" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="536" y="901" class="n-title">wrap_with_rerank() 精排</text>
+    <text x="536" y="920" class="n-sub">bge-reranker-v2-m3 交叉编码器 → top5</text>
+    <line x1="720" y1="938" x2="720" y2="963" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="970" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="970" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="536" y="995" class="n-title">build_qa_messages() 拼 Prompt</text>
+    <text x="536" y="1014" class="n-sub">三条硬规则：只用资料 / 不足就明说 / 标 [n]</text>
+    <line x1="720" y1="1032" x2="720" y2="1057" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="1064" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="1064" width="400" height="62" rx="6" fill="rgba(30,41,59,0.70)" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="536" y="1089" class="n-title">chat_direct() → DeepSeek</text>
+    <text x="536" y="1108" class="n-sub">deepseek-chat · temperature 0.1 · 裸 httpx</text>
+    <line x1="720" y1="1126" x2="720" y2="1151" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="1158" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="1158" width="400" height="62" rx="6" fill="rgba(76,29,149,0.50)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="536" y="1183" class="n-title">落库与缓存回填</text>
+    <text x="536" y="1202" class="n-sub">add_turn() 批量 4 次 SQL + set_cached()</text>
+    <line x1="720" y1="1220" x2="720" y2="1245" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="520" y="1252" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="520" y="1252" width="400" height="62" rx="6" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="536" y="1277" class="n-title">ApiResponse{answer, sources}</text>
+    <text x="536" y="1296" class="n-sub">前端渲染 [1][2] 角标 + 出处折叠面板</text>
+    <rect x="980" y="200" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="980" y="200" width="400" height="62" rx="6" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="996" y="225" class="n-title">POST /api/eval/{retrieval,generation}</text>
+    <text x="996" y="244" class="n-sub">另有 build-golden-set 用 DeepSeek 出题（需人工校对）</text>
+    <line x1="1180" y1="262" x2="1180" y2="287" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="980" y="294" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="980" y="294" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="996" y="319" class="n-title">evaluate_retrieval()</text>
+    <text x="996" y="338" class="n-sub">HitRate@K · MRR@K · Recall@K · nDCG@K</text>
+    <line x1="1180" y1="356" x2="1180" y2="381" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="980" y="388" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="980" y="388" width="400" height="62" rx="6" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.5"/>
+    <text x="996" y="413" class="n-title">evaluate_generation() · RAGAS</text>
+    <text x="996" y="432" class="n-sub">缺 answer/contexts 时先跑一遍问答链路补齐</text>
+    <line x1="1180" y1="450" x2="1180" y2="475" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="980" y="482" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="980" y="482" width="400" height="62" rx="6" fill="rgba(76,29,149,0.50)" stroke="#a78bfa" stroke-width="1.5"/>
+    <text x="996" y="507" class="n-title">_save_record() → eval_records</text>
+    <text x="996" y="526" class="n-sub">连同 config_snapshot 一起落库，便于跨版本对比</text>
+    <line x1="1180" y1="544" x2="1180" y2="569" stroke="#475569" stroke-width="1.5" marker-end="url(#arw)"/>
+    <rect x="980" y="576" width="400" height="62" rx="6" fill="#0f172a"/>
+    <rect x="980" y="576" width="400" height="62" rx="6" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="996" y="601" class="n-title">GET /api/eval/records</text>
+    <text x="996" y="620" class="n-sub">回答「这次调优到底有没有用」</text>
+    <rect x="980" y="700" width="400" height="230" rx="8" fill="rgba(251,191,36,0.05)" stroke="#334155" stroke-width="1" stroke-dasharray="4,4"/>
+    <text x="1000" y="728" class="panel-title">默认开关（config.py）</text>
+    <text x="1000" y="756" class="kw">ENABLE_HYPE = true</text>
+    <text x="1230" y="756" class="n-sub">建库时生 3 个假想问题</text>
+    <text x="1000" y="785" class="kw">ENABLE_QUERY_TRANSFORM = false</text>
+    <text x="1230" y="785" class="n-sub">性价比低，换库后再开</text>
+    <text x="1000" y="814" class="kw">ENABLE_HYDE = false</text>
+    <text x="1230" y="814" class="n-sub">多花一次 LLM 调用</text>
+    <text x="1000" y="843" class="kw">RERANK_PROVIDER = local</text>
+    <text x="1230" y="843" class="n-sub">实测 ROI 最高的一环</text>
+    <text x="1000" y="872" class="kw">SEMANTIC_CACHE ≥ 0.95</text>
+    <text x="1230" y="872" class="n-sub">Redis 失效则内存 LRU</text>
+    <text x="1000" y="901" class="kw">retrieval_use_async = false</text>
+    <text x="1230" y="901" class="n-sub">同步链路下必崩</text>
+    <text x="60" y="1372" class="col-sub">图例</text>
+    <rect x="110" y="1362" width="12" height="12" rx="3" fill="rgba(8,51,68,0.55)" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="130" y="1372" class="n-sub">API / 入口层（api/routes_*.py）</text>
+    <rect x="343.6" y="1362" width="12" height="12" rx="3" fill="rgba(6,78,59,0.50)" stroke="#34d399" stroke-width="1.2"/>
+    <text x="363.6" y="1372" class="n-sub">核心处理（core/*）</text>
+    <rect x="503.20000000000005" y="1362" width="12" height="12" rx="3" fill="rgba(76,29,149,0.50)" stroke="#a78bfa" stroke-width="1.2"/>
+    <text x="523.2" y="1372" class="n-sub">存储（pgvector · 业务表 · 缓存）</text>
+    <rect x="737.6" y="1362" width="12" height="12" rx="3" fill="rgba(30,41,59,0.70)" stroke="#94a3b8" stroke-width="1.2"/>
+    <text x="757.6" y="1372" class="n-sub">外部服务（DeepSeek / SiliconFlow）</text>
+    <rect x="986.8000000000001" y="1362" width="12" height="12" rx="3" fill="rgba(120,53,15,0.45)" stroke="#fbbf24" stroke-width="1.2"/>
+    <text x="1006.8000000000001" y="1372" class="n-sub">降级分支 / 可选开关</text>
+    </svg>
+  </div>
+
+  <div class="cards">
+        <div class="card"><div class="card-header"><div class="card-dot" style="background:#22d3ee"></div><h3>关键工程决策</h3></div><ul><li>重量级对象全部懒加载 + 单例（dependencies.py）：embed / llm / reranker / vectorstore / index / retriever</li><li>导入或删除后三层缓存联动失效：invalidate_index_cache + invalidate_retriever_cache + clear_cache</li><li>全链路同步（同步处理器 + psycopg2 + 同步 httpx）；retrieval_use_async 必须关，否则第二次检索 nested async</li><li>业务表与向量表分工：chunks 表供管理与溯源，data_fire_chunks 供向量检索（node_id = chunks.id）</li></ul></div>
+    <div class="card"><div class="card-header"><div class="card-dot" style="background:#fbbf24"></div><h3>降级策略（每一层都设计过）</h3></div><ul><li>解析：pdfplumber → PyMuPDF → PaddleOCR，每级都要过文本质量分</li><li>切块：SemanticSplitterNodeParser → SentenceSplitter</li><li>缓存：Redis → 进程内 LRU → 直通（不缓存）</li><li>精排：加载失败返回 None，检索链路自动跳过</li><li>数据库：驱动缺失 → 内存 SQLite，保证 import 与单测不被环境阻断</li><li>LLM 未配 key：只告警不抛错，导入/检索链路仍可跑通</li></ul></div>
+    <div class="card"><div class="card-header"><div class="card-dot" style="background:#34d399"></div><h3>实测数字（来自 README）</h3></div><ul><li>Rerank 前后：RRF 0.016（无量纲，无法判断好坏）→ reranker 3.24 / 3.00 / 2.90</li><li>Embedding 吞吐：CPU 33.7 条/秒 → GPU 653.6 条/秒（约 19 倍）</li><li>一期优化：单次问答 50s → 12.5s（单例模型 + 检索器缓存 + 批量写 SQL）</li><li>瓶颈定位：模型合计约 4s，跨境 SQL 往返 2.4~6.4s/次（Neon 新加坡）</li><li>语料示例：GB/T 38315—2019 单文件 → 64 块</li></ul></div>
+  </div>
+
+  <footer>
+    依据仓库源码逐文件核对生成，未运行项目。节点内的文件名为实际模块路径；
+    颜色表示组件性质（见图中图例）。性能数字引自 README「性能」与「踩坑记录」两节。
+  </footer>
+</div>
+</body>
+</html>

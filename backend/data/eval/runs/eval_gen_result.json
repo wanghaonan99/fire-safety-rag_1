@@ -1,0 +1,12 @@
+{
+  "run_name": "ragas-baseline-v1",
+  "eval_type": "generation",
+  "metrics": {
+    "context_precision": 0.936,
+    "context_recall": 0.9631,
+    "faithfulness": 0.8322
+  },
+  "dataset_size": 140,
+  "duration_sec": 2115.27,
+  "detail": []
+}
