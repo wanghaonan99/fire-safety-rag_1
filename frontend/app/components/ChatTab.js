@@ -319,6 +319,13 @@ export default function ChatTab({ settings, user, sessionId, setSessionId, toast
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
+  // 桌面端自动聚焦；小屏不聚焦（否则一进页面就弹键盘，挡住半个屏幕）
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 900) {
+      inputRef.current?.focus();
+    }
+  }, []);
+
   // 键盘：/ 聚焦输入，Esc 关面板，↑ 调出上一个问题（输入框为空时）
   useEffect(() => {
     function onKey(e) {
@@ -592,11 +599,17 @@ export default function ChatTab({ settings, user, sessionId, setSessionId, toast
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="例如：甲、乙类厂房与相邻工厂的防火间距是多少？"
-            autoFocus
+            enterKeyHint="send"
+            autoComplete="off"
           />
           {messages.length > 0 && (
-            <button type="button" className="btn ghost" onClick={clearLocal} title="新建会话（保留历史记录）">
-              新会话
+            <button
+              type="button"
+              className="btn ghost new-session"
+              onClick={clearLocal}
+              title="新建会话（保留历史记录）"
+            >
+              ＋<span className="new-session-label">新会话</span>
             </button>
           )}
           <button className="send" type="submit" disabled={loading || !input.trim()}>
@@ -604,8 +617,9 @@ export default function ChatTab({ settings, user, sessionId, setSessionId, toast
           </button>
         </form>
         <div className="foot">
-          {sessionId ? `当前会话 ${sessionId.slice(0, 8)}… · ` : ''}
-          Enter 发送 · Shift+Enter 换行 · 按 / 聚焦输入 · Esc 关闭出处 · 回答仅供参考，请以规范原文为准
+          <span className="foot-session">{sessionId ? `当前会话 ${sessionId.slice(0, 8)}… · ` : ''}</span>
+          <span className="foot-keys">Enter 发送 · Shift+Enter 换行 · 按 / 聚焦输入 · Esc 关闭出处 · </span>
+          <span className="foot-note">回答仅供参考，请以规范原文为准</span>
         </div>
       </div>
     </>

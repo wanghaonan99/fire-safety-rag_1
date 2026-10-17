@@ -202,9 +202,14 @@ export default function Home() {
             {docsStat.loading ? (
               <span className="docs-badge-text">读取中…</span>
             ) : (
-              <span className="docs-badge-text">
-                {docsStat.docs} 份资料 · {docsStat.chunks} 块
-              </span>
+              <>
+                <span className="docs-badge-text docs-badge-full">
+                  {docsStat.docs} 份资料 · {docsStat.chunks} 块
+                </span>
+                <span className="docs-badge-text docs-badge-short">
+                  {docsStat.docs} · {docsStat.chunks}
+                </span>
+              </>
             )}
           </button>
 

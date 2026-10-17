@@ -1143,3 +1143,162 @@ body { background: transparent; }
 }
 
 
+
+/* ==========================================================================
+   移动端适配（触屏 + ≤900 / ≤640 / ≤430）
+   修复清单：
+     1. 顶栏一行塞不下 → 允许换行、标题单行省略、徽标改短格式
+     2. 输入框 15px 会触发 iOS 自动放大 → 小屏统一 16px
+     3. 一进页面就弹键盘 → 取消 autoFocus，仅桌面端聚焦
+     4. 底部提示太长把正文顶掉 → 小屏隐藏键盘提示与会话号
+     5. 文档列表按钮挤压标题 → 动作按钮换到第二行
+     6. 弹窗 82vh 在小屏不适 → 改用 dvh + 收紧内边距
+     7. 刘海屏安全区 → 底部固定元素加 env(safe-area-inset-bottom)
+   ========================================================================== */
+
+/* ---------- 基础：禁字体膨胀、去点按高亮 ---------- */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { overscroll-behavior-y: contain; }
+* { -webkit-tap-highlight-color: transparent; }
+
+/* 徽标/按钮的移动端变体（默认隐藏短格式） */
+.docs-badge-short { display: none; }
+
+/* ---------- 触屏设备：点击目标放大到 34~44px ---------- */
+@media (pointer: coarse) {
+  .icon-btn { width: 38px; height: 38px; font-size: 15px; }
+  .icon-btn.wide { padding: 0 12px; }
+  .cite-btn { padding: 2px 8px; margin: 0 2px; font-size: 12px; }
+  .chip-btn { padding: 11px 16px; }
+  .cite-chip { padding: 7px 10px; }
+  .btn.sm { padding: 8px 12px; min-height: 36px; }
+  .chip-btn-sm { min-height: 30px; padding: 4px 10px; }
+  .send { min-height: 42px; }
+  /* 触屏上不保留 hover 残影 */
+  .chip-btn:hover, .cite-chip:hover, .docs-badge:hover { transform: none; }
+}
+
+/* ---------- ≤900：平板与横屏手机 ---------- */
+@media (max-width: 900px) {
+  .topbar-inner { flex-wrap: wrap; gap: 8px 10px; padding: 10px 14px; }
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .brand-text { min-width: 0; }
+  .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .status { order: 2; }
+  .topbar-actions { order: 3; margin-left: auto; }
+  .shell, .docs-view { padding-left: 14px; padding-right: 14px; }
+}
+
+/* ---------- ≤640：手机竖屏（主要战场） ---------- */
+@media (max-width: 640px) {
+  /* —— 顶栏 —— */
+  .topbar-inner { padding: 9px 12px; gap: 8px; }
+  .brand { gap: 8px; flex: 1 1 60%; }
+  .logo { width: 30px; height: 30px; font-size: 15px; border-radius: 9px; }
+  .title { font-size: 14.5px; }
+  .subtitle { display: none; }
+  .docs-badge { padding: 6px 10px; font-size: 11.5px; flex: none; }
+  .docs-badge-full { display: none; }
+  .docs-badge-short { display: inline; }
+  .topbar-actions { gap: 4px; margin-left: auto; }
+  .icon-btn { width: 34px; height: 34px; }
+  .icon-label, .cnt { display: none; }
+
+  /* —— 内容区 —— */
+  .shell { padding: 0 12px 24px; }
+  .docs-view { padding: 12px; }
+  .card-head { padding: 12px 14px; gap: 8px; }
+  .card-body { padding: 13px 14px; }
+  .dropzone { padding: 20px 14px; }
+  .dropzone .big { font-size: 26px; }
+  .view-head { gap: 8px; }
+  .view-hint { font-size: 11.5px; }
+
+  /* —— 文档列表：动作按钮换行，标题不再被挤 —— */
+  .item { flex-wrap: wrap; padding: 12px 14px; gap: 9px; align-items: flex-start; }
+  .item .main { flex: 1 1 100%; }
+  .item .actions { flex: 1 1 100%; justify-content: flex-end; }
+
+  /* —— 对话气泡 —— */
+  .thread { gap: 14px; }
+  .msg { gap: 8px; }
+  .avatar { width: 28px; height: 28px; font-size: 13px; border-radius: 8px; margin-top: 1px; }
+  .msg.bot .bubble { max-width: calc(100% - 36px); padding: 13px 15px 12px; }
+  .msg.user .bubble { max-width: 86%; font-size: 14px; }
+
+  /* —— 答案三段 —— */
+  .ans-sec { margin-bottom: 13px; }
+  .ans-h { font-size: 10.5px; letter-spacing: .08em; margin-bottom: 7px; }
+  .basis-text { font-size: calc(13px * var(--fs-boost, 1)); line-height: 1.75; }
+  .ans-sec-action .ans-list > li { padding-left: 26px; margin: 8px 0; }
+  .ans-table th, .ans-table td { padding: 6px 9px; }
+  .ans-code { font-size: 12px; }
+
+  /* —— 引用条：单行横向滚动，不再换行吃掉高度 —— */
+  .cite-bar {
+    flex-wrap: nowrap; overflow-x: auto; gap: 6px;
+    padding-bottom: 3px; -webkit-overflow-scrolling: touch;
+  }
+  .cite-bar::-webkit-scrollbar { display: none; }
+  .cite-chip { flex: none; max-width: 74vw; }
+  .cite-chip-doc { max-width: 44vw; }
+  .cite-chip-path { display: none; }
+
+  /* —— 元信息 —— */
+  .meta-row { gap: 5px; }
+  .meta-row .chip { font-size: 10.5px; padding: 2px 8px; }
+
+  /* —— 首屏建议问题：整行块状，便于点按 —— */
+  .hero .chips-wrap { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 2px; }
+  .hero .chip-btn { width: 100%; text-align: left; justify-content: flex-start; }
+  .hero-banner { height: 156px; margin-bottom: 14px; }
+  .hero-banner-text { left: 16px; right: 16px; bottom: 14px; }
+  .hero-banner-text h2 { font-size: 17px; }
+  .hero-banner-tag { top: 12px; left: 16px; }
+
+  /* —— 输入区：16px 防自动放大 + 安全区 —— */
+  .composer { padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .composer-inner { gap: 6px; padding: 7px 7px 7px 13px; border-radius: 15px; }
+  .composer input { font-size: 16px; padding: 9px 0; }
+  .send { padding: 9px 15px; font-size: 14px; border-radius: 10px; }
+  .new-session { padding: 8px 11px; font-size: 14px; }
+  .new-session-label { display: none; }
+  .foot { font-size: 10.5px; line-height: 1.5; margin-top: 6px; }
+  .foot-keys, .foot-session { display: none; }
+  .shell.chat { padding-bottom: 116px; }
+
+  /* —— 弹窗（切块预览）—— */
+  .modal-mask { padding: 10px; }
+  .modal { width: 100%; max-height: 86dvh; border-radius: 14px; }
+  .modal-head { padding: 12px 14px; gap: 8px; }
+  .modal-head h3 { font-size: 13.5px; }
+  .modal-body { padding: 12px 14px; }
+  .chunk { padding: 10px 11px; }
+
+  /* —— 出处面板 / 抽屉：底部留安全区 —— */
+  .src-panel { padding: 13px 12px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .drawer-body { padding: 12px 12px calc(24px + env(safe-area-inset-bottom, 0px)); }
+
+  /* —— 表单控件 16px，避免 iOS 聚焦放大 —— */
+  .select, .input, textarea { font-size: 16px; }
+}
+
+/* ---------- ≤430：小屏手机（iPhone SE / 12 mini 等） ---------- */
+@media (max-width: 430px) {
+  .topbar-inner { padding: 8px 10px; }
+  .title { font-size: 13.5px; }
+  .topbar-actions { gap: 3px; }
+  .icon-btn { width: 32px; height: 32px; font-size: 14px; }
+  .msg.bot .bubble { max-width: calc(100% - 32px); }
+  .hero-banner { height: 140px; }
+  .hero-banner-text h2 { font-size: 16px; }
+  .send { padding: 9px 12px; }
+}
+
+/* ---------- 横屏手机：把可用高度还给内容 ---------- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero-banner { display: none; }
+  .composer { padding-top: 8px; }
+  .foot { display: none; }
+  .shell.chat { padding-bottom: 92px; }
+}

@@ -3,16 +3,26 @@ export const metadata = {
   description: '基于消防法规、应急预案与培训资料的 RAG 问答助手',
 };
 
+/**
+ * 移动端视口配置：
+ *   viewportFit=cover → 支持 iPhone 刘海屏，配合 CSS 的 env(safe-area-inset-*) 使用
+ *   不限制 maximumScale → 保留双指缩放（无障碍），输入框另用 16px 字号防自动放大
+ */
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#efe9e1' },
+    { media: '(prefers-color-scheme: dark)', color: '#0c0e13' },
+  ],
+};
+
 import './globals.css';
 
 /**
- * 首屏防闪脚本（在 React 水合前同步执行）。
- *
- * 为什么需要：主题/字号/背景开关都存在 localStorage 里，而 React 的 useEffect
- * 要等水合之后才跑。不提前设置的话，深色用户会先看到一帧亮色（FOUC）。
- * 这里在 <head> 里同步读取偏好并写到 <html> 上，水合时状态已经一致。
- *
- * 注意：localStorage 存的是 JSON（saveLocal 用 JSON.stringify），所以要 JSON.parse。
+ * 首屏防闪脚本（在 React 水合前同步执行）：主题/字号/背景开关存在 localStorage，
+ * useEffect 要等水合后才跑，不提前设置会让深色用户先看到一帧亮色（FOUC）。
  */
 const bootScript = `(function(){try{
   var d=document.documentElement;
